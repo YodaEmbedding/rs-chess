@@ -2,5 +2,9 @@
 name = "rs-chess"
 version = "0.1.0"
 authors = ["Mateen Ulhaq <mulhaq2005@gmail.com>"]
+description = "A simple chess engine."
+license = "MIT"
 
 [dependencies]
+arrayvec = "0.4.7"
+
