@@ -1,5 +1,4 @@
 use std::fmt;
-use std::io::Write;
 
 use arrayvec::ArrayVec;
 
@@ -61,7 +60,7 @@ impl Position {
 impl fmt::Display for Position {
     // extract to separate display functions for different things...?
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}\n{:?}", self.turn, self.piece_board)
+        write!(f, "{:?}\n{}", self.turn, self.piece_board)
     }
 }
 

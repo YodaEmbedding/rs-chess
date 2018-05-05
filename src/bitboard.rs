@@ -1,5 +1,4 @@
 use std::fmt;
-use std::io::Write;
 
 #[derive(Debug)]
 pub struct Bitboard(pub u64);

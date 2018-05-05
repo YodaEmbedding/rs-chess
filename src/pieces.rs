@@ -1,7 +1,8 @@
 extern crate arrayvec;
 
 use std::fmt;
-use std::io::Write;
+use std::option::Option;
+use std::string::String;
 
 use self::arrayvec::ArrayVec;  // err... self::?
 
@@ -54,53 +55,83 @@ impl Piece {
     }
 }
 
-
 impl PieceBoard {
     pub fn new_default() -> PieceBoard {
-        //macro_rules! piece {
-        //    ($p:expr, $c:expr) => (Some(Piece::new(PieceName::$p, Color::$c)))
-        //}
-        //macro_rules! wp { () => (piece!(Pawn, White)) }
+        macro_rules! opt_piece {
+            ($p:expr, $c:expr) => (Some(Piece::new($p, $c)))
+        }
 
-        macro_rules! wp { () => (Some(Piece::new(PieceName::Pawn, Color::White))) }
-        macro_rules! bp { () => (Some(Piece::new(PieceName::Pawn, Color::Black))) }
+        macro_rules! wp { () => (opt_piece!(PieceName::Pawn,   Color::White)) }
+        macro_rules! wn { () => (opt_piece!(PieceName::Knight, Color::White)) }
+        macro_rules! wb { () => (opt_piece!(PieceName::Bishop, Color::White)) }
+        macro_rules! wr { () => (opt_piece!(PieceName::Rook,   Color::White)) }
+        macro_rules! wq { () => (opt_piece!(PieceName::Queen,  Color::White)) }
+        macro_rules! wk { () => (opt_piece!(PieceName::King,   Color::White)) }
+        macro_rules! bp { () => (opt_piece!(PieceName::Pawn,   Color::Black)) }
+        macro_rules! bn { () => (opt_piece!(PieceName::Knight, Color::Black)) }
+        macro_rules! bb { () => (opt_piece!(PieceName::Bishop, Color::Black)) }
+        macro_rules! br { () => (opt_piece!(PieceName::Rook,   Color::Black)) }
+        macro_rules! bq { () => (opt_piece!(PieceName::Queen,  Color::Black)) }
+        macro_rules! bk { () => (opt_piece!(PieceName::King,   Color::Black)) }
 
         // TODO incomplete table
         PieceBoard(ArrayVec::from([
-            None, None, None, None, None, None, None, None,
+            wr!(), wn!(), wb!(), wq!(), wk!(), wb!(), wn!(), wr!(),
             wp!(), wp!(), wp!(), wp!(), wp!(), wp!(), wp!(), wp!(),
             None, None, None, None, None, None, None, None,
             None, None, None, None, None, None, None, None,
             None, None, None, None, None, None, None, None,
             None, None, None, None, None, None, None, None,
             bp!(), bp!(), bp!(), bp!(), bp!(), bp!(), bp!(), bp!(),
-            None, None, None, None, None, None, None, None,
+            br!(), bn!(), bb!(), bq!(), bk!(), bb!(), bn!(), br!(),
         ]))
     }
 }
 
 impl PieceName {
-    fn to_letter(&self) -> String {
-        match self {
-            Pawn   => "p",
-            Knight => "n",
-            Bishop => "b",
-            Rook   => "r",
-            Queen  => "q",
-            King   => "k"
+    fn to_char(&self) -> char {
+        match *self {
+            PieceName::Pawn   => 'p',
+            PieceName::Knight => 'n',
+            PieceName::Bishop => 'b',
+            PieceName::Rook   => 'r',
+            PieceName::Queen  => 'q',
+            PieceName::King   => 'k'
         }
     }
 }
 
 impl fmt::Display for PieceName {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.to_letter())
+        write!(f, "{}", self.to_char())
+    }
+}
+
+impl fmt::Display for Piece {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let s = format!("{}", self.piece_name);
+
+        write!(f, "{}", match self.color {
+            Color::White => s.to_uppercase(),
+            Color::Black => s
+        })
     }
 }
 
 impl fmt::Display for PieceBoard {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{:?}", self)
+        fn opt_piece_to_str(piece: &Option<Piece>) -> String {
+            match *piece {
+                Some(ref p) => format!("{}", p),
+                None        => String::from(".")
+            }
+        }
+
+        let xs = self.0.iter().map(opt_piece_to_str).collect::<Vec<_>>();
+        let rows = xs.chunks(8).map(|x| x.join("")).rev().collect::<Vec<_>>();
+        let grid = rows.join("\n");
+
+        write!(f, "{}", grid)
     }
 }
 
