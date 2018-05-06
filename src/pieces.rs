@@ -1,10 +1,9 @@
-extern crate arrayvec;
-
 use std::fmt;
 use std::option::Option;
 use std::string::String;
 
-use self::arrayvec::ArrayVec;  // err... self::?
+extern crate arrayvec;
+use self::arrayvec::ArrayVec;
 
 // enum Direction {
 //   North =  8,
@@ -50,13 +49,13 @@ pub struct Piece {
 pub struct PieceBoard(pub ArrayVec<[Option<Piece>; 64]>);
 
 impl Piece {
-    pub fn new(piece_name: PieceName, color: Color) -> Piece {
+    pub fn new(piece_name: PieceName, color: Color) -> Self {
         Piece { piece_name: piece_name, color: color }
     }
 }
 
 impl PieceBoard {
-    pub fn new_default() -> PieceBoard {
+    pub fn new_default() -> Self {
         macro_rules! opt_piece {
             ($p:expr, $c:expr) => (Some(Piece::new($p, $c)))
         }
