@@ -13,14 +13,16 @@ pub struct Game {
     pub pawn_attack_map:   AttackMap,
     pub bishop_attack_map: AttackMap,
     pub rook_attack_map:   AttackMap,
+    pub queen_attack_map:  AttackMap,
 }
 
 impl Game {
     pub fn new() -> Self {
         Game {
-            pawn_attack_map:    Self::get_pawn_attacks(),
-            bishop_attack_map:  Self::get_bishop_attacks(),
-            rook_attack_map:    Self::get_rook_attacks(),
+            pawn_attack_map:   Self::get_pawn_attacks(),
+            bishop_attack_map: Self::get_bishop_attacks(),
+            rook_attack_map:   Self::get_rook_attacks(),
+            queen_attack_map:  Self::get_queen_attacks(),
         }
     }
 
@@ -64,6 +66,19 @@ impl Game {
             let bb = Bitboard(
                 bitboard::Rank1.shift_up_n(rank).0 |
                 bitboard::FileA.shift_right_n(file).0);
+            attack_map.push(bb);
+        }
+
+        attack_map
+    }
+
+    fn get_queen_attacks() -> AttackMap {
+        let mut attack_map = AttackMap::new();
+        let rook_attack_map   = Self::get_rook_attacks();
+        let bishop_attack_map = Self::get_bishop_attacks();
+
+        for i in 0..64 {
+            let bb = Bitboard(rook_attack_map[i].0 | bishop_attack_map[i].0);
             attack_map.push(bb);
         }
 

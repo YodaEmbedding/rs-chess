@@ -18,7 +18,7 @@ fn main() {
     println!("\n{}", position.bitboard_piece[PieceName::Pawn as usize]);
 
     let game = Game::new();
-    let bbs = game.pawn_attack_map.iter()
+    let bbs = game.queen_attack_map.iter()
         .map(|x| format!("{}", x))
         .take(16)
         .collect::<Vec<_>>();
