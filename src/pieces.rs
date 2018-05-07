@@ -2,8 +2,7 @@ use std::fmt;
 use std::option::Option;
 use std::string::String;
 
-extern crate arrayvec;
-use self::arrayvec::ArrayVec;
+use arrayvec::ArrayVec;
 
 // enum Direction {
 //   North =  8,

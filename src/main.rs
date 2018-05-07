@@ -3,21 +3,24 @@
 extern crate arrayvec;
 
 mod bitboard;
+mod game;
 mod movegen;
 mod pieces;
 mod position;
 
-use position::Position;
+use game::Game;
 use pieces::PieceName;
+use position::Position;
 
 fn main() {
     let position = Position::new_default();
     println!("\n{}", position);
     println!("\n{}", position.bitboard_piece[PieceName::Pawn as usize]);
 
-    let bbs = movegen::init_rook_attacks().iter()
+    let game = Game::new();
+    let bbs = game.pawn_attack_map.iter()
         .map(|x| format!("{}", x))
-        .take(3)
+        .take(16)
         .collect::<Vec<_>>();
     println!("\n{}", bbs.join("\n\n"));
 }
