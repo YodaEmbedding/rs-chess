@@ -6,9 +6,6 @@ use arrayvec::ArrayVec;
 type AttackMap = ArrayVec<[Bitboard; 64]>;
 
 pub struct Game {
-    // RookAttackMap: ArrayVec<[Bitboard; 64]> = ArrayVec::from([Bitboard(0); 64]);
-    // RookAttackMap: [Bitboard; 64] = [Bitboard(0); 64];
-    // TODO temporarily public
     // TODO consider moving these into a MoveGenerator class?
     pub pawn_attack_map:   AttackMap,
     pub bishop_attack_map: AttackMap,

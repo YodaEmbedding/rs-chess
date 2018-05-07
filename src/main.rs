@@ -25,11 +25,10 @@ fn main() {
     println!("\n{}", bbs.join("\n\n"));
 }
 
-// Design some data structures first?
-// Also interfaceslet s: String = v.iter().collect();
-// And function signatures
-
-// Display piece_board and bitboards?
+// TODO
+// Magics
+// Evaluation
+// a-b
 
 // Experiment: Delta static evaluation (positional evaluation remains largely same between most positions)
 
