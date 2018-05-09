@@ -18,7 +18,7 @@ use arrayvec::ArrayVec;
 pub const COLOR_SIZE: usize = 2;
 pub const PIECE_NAME_SIZE: usize = 6;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Color {
     White,
     Black,
@@ -49,7 +49,7 @@ pub struct PieceBoard(pub ArrayVec<[Option<Piece>; 64]>);
 
 impl Piece {
     pub fn new(piece_name: PieceName, color: Color) -> Self {
-        Piece { piece_name: piece_name, color: color }
+        Self { piece_name: piece_name, color: color }
     }
 }
 
