@@ -19,12 +19,24 @@ impl Move {
 }
 
 impl Position {
-    // pub fn find_moves(&self) -> [Moves] {
-    //     
-    // }
-    //
+    const INITIAL_MOVELIST_CAPACITY: usize = 64;
+
+    pub fn get_moves(&self) -> Vec<Move> {
+        let mut moves: Vec<Move> = Vec::with_capacity(Self::INITIAL_MOVELIST_CAPACITY);
+
+        // Player, Opponent?
+
+        // get_valid_attacks() // different for sliding?
+        // if bish,queen,rook, do get_moves_sliding()
+
+        moves
+    }
+
     // fn get_pawn_attacks(&self) -> [Moves] {
     //
+    // }
+
+    // fn get_attacks(&self) -> Vec<Move> {
     // }
 }
 

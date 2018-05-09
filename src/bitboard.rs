@@ -1,19 +1,14 @@
 use std::fmt;
-use std::ops;
 
+// Consider using pleco library?
+// Or even better: bit_collection... looks quite complicated but probably fast too
+// #[derive(BitCollection)]
 #[derive(Debug, Copy, Clone)]
 pub struct Bitboard(pub u64);
 
-// #[repr(u64)]
-// pub enum Bitboards {
-//     Empty = 0x0000000000000000u64,
-//     FileA = 0x0101010101010101u64,
-//     FileH = 0x8080808080808080u64,
-//     Rank1 = 0x00000000000000FFu64,
-//     Rank8 = 0xFF00000000000000u64,
-//     A1H8  = 0x8040201008040201u64,
-//     A8H1  = 0x0102040810204080u64,
-// }
+pub struct BitboardIterator {
+    bitboard: Bitboard
+}
 
 pub const Empty: Bitboard = Bitboard(0x0000000000000000u64);
 pub const FileA: Bitboard = Bitboard(0x0101010101010101u64);
@@ -60,6 +55,21 @@ impl Bitboard {
     pub fn shift_right_n(&self, n: usize) -> Self { Bitboard((self.0 &  HorzShiftMask[8-n].0) << n) }
     pub fn shift_up_n   (&self, n: usize) -> Self { Bitboard((self.0 &  VertShiftMask[8-n].0) << 8*n) }
     pub fn shift_down_n (&self, n: usize) -> Self { Bitboard((self.0 & !VertShiftMask[n].0)   >> 8*n) }
+
+    pub fn iter(&self) -> BitboardIterator {
+        BitboardIterator { bitboard: *self }
+    }
+}
+
+impl Iterator for BitboardIterator {
+    type Item = u32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let tz = self.bitboard.0.trailing_zeros();
+        if tz >= 64 { return None }
+        self.bitboard.0 -= 1 << tz;
+        Some(tz)
+    }
 }
 
 impl fmt::Display for Bitboard {
