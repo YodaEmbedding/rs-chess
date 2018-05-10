@@ -1,5 +1,7 @@
 use std::fmt;
 
+use square::Square;
+
 // Consider using pleco library?
 // Or even better: bit_collection... looks quite complicated but probably fast too
 // #[derive(BitCollection)]
@@ -46,6 +48,14 @@ pub const VertShiftMask: [Bitboard; 9] = [
 ];
 
 impl Bitboard {
+    pub fn from(square: Square) -> Bitboard {
+        Bitboard(1 << square.0)
+    }
+
+    pub fn iter(&self) -> BitboardIterator {
+        BitboardIterator { bitboard: *self }
+    }
+
     #[inline] pub fn shift_left (&self) -> Self { Bitboard((self.0 & !FileA.0) >> 1) }
     #[inline] pub fn shift_right(&self) -> Self { Bitboard((self.0 & !FileH.0) << 1) }
     #[inline] pub fn shift_up   (&self) -> Self { Bitboard((self.0 & !Rank8.0) << 8) }
@@ -55,20 +65,16 @@ impl Bitboard {
     pub fn shift_right_n(&self, n: usize) -> Self { Bitboard((self.0 &  HorzShiftMask[8-n].0) << n) }
     pub fn shift_up_n   (&self, n: usize) -> Self { Bitboard((self.0 &  VertShiftMask[8-n].0) << 8*n) }
     pub fn shift_down_n (&self, n: usize) -> Self { Bitboard((self.0 & !VertShiftMask[n].0)   >> 8*n) }
-
-    pub fn iter(&self) -> BitboardIterator {
-        BitboardIterator { bitboard: *self }
-    }
 }
 
 impl Iterator for BitboardIterator {
-    type Item = u32;
+    type Item = Square;
 
     fn next(&mut self) -> Option<Self::Item> {
         let tz = self.bitboard.0.trailing_zeros();
         if tz >= 64 { return None }
         self.bitboard.0 -= 1 << tz;
-        Some(tz)
+        Some(Square(tz))
     }
 }
 

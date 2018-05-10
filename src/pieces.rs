@@ -18,13 +18,13 @@ use arrayvec::ArrayVec;
 pub const COLOR_SIZE: usize = 2;
 pub const PIECE_NAME_SIZE: usize = 6;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Color {
     White,
     Black,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum PieceName {
     Pawn,
     Knight,
@@ -38,7 +38,7 @@ pub enum PieceName {
 
 // Consider making this a tuple struct?
 // Or a uchar for space savings; with accessor methods for extracting pieceName/color
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Piece {
     pub piece_name: PieceName,
     pub color: Color,

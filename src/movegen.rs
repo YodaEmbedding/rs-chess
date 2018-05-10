@@ -1,10 +1,13 @@
+use std::slice::Iter;
+
 use arrayvec::ArrayVec;
 
 use bitboard;
-use bitboard::Bitboard;
-use position::Position;
-use pieces::{Color, PieceName};
+use bitboard::{Bitboard, BitboardIterator};
 use moves::Move;
+use pieces::{Color, PieceName};
+use position::Position;
+use square::Square;
 
 type AttackMap = ArrayVec<[Bitboard; 64]>;
 
@@ -93,46 +96,56 @@ impl MoveGenerator {
     const INITIAL_MOVELIST_CAPACITY: usize = 64;
 
     pub fn get_moves(&self, position: &Position) -> Vec<Move> {
-        let mut moves: Vec<Move> = Vec::with_capacity(Self::INITIAL_MOVELIST_CAPACITY);
-
         // TODO position.turn.opposite()
         let player_color = Color::White;
         let enemy_color  = Color::Black;
 
+        // TODO this kind of has implicit cloning... ehhhh
         let pieces = position.piece_board.0.iter()
-            .filter(|op| match op {
-                Some(p) => p.color == player_color,
-                None => false
-            });
+            .filter_map(|p| *p)
+            // .filter(|p| p.is_some())
+            // .map(   |p| p.unwrap())
+            .filter(|p| p.color == player_color);
+            // .filter(|p| p.color == player_color);
+            // .filter(|op| match *op {
+            //     Some(p) => p.color == player_color,
+            //     None    => false
+            // });
 
+        // Consider Vec<Iter<Move>>
+        let mut movelist: Vec<Vec<Move>> = Vec::with_capacity(Self::INITIAL_MOVELIST_CAPACITY);
+
+        // switch by piece type (or consider no-cost polymorphism?)
+        // for pawns, loop through all squares of attack map (check legality only for if piece exists) and also legal single pawn pushes
         for (i, piece) in pieces.enumerate() {
-            // switch by piece type (or consider no-cost polymorphism?)
-            // for pawns, loop through all squares of attack map (check legality only for if piece exists) and also legal single pawn pushes
+            let from = Square(i as u32);
 
             // TODO move pattern match into separate function
-            // let move_squares = match piece.piece_name {
-            //     PieceName::Pawn => get_pawn_attacks(),
-            //     _               => get_pawn_attacks() // TODO
-            // };
+            let move_squares = match piece.piece_name {
+                PieceName::Pawn => self.get_pawn_attacks(from),
+                _               => self.get_pawn_attacks(from) // TODO
+            };
 
-            // moves.append(&mut ummmm you should probably construct the other vector... or push into this one directly over iteration?)
-            // moves.extend()
+            // TODO flags...?
+            let pseudo_moves = move_squares
+                .map(|to| Move::new(from, to, 0x00))
+                .collect::<Vec<Move>>();
+
+            movelist.push(pseudo_moves);
         }
 
         // get_valid_attacks() // different for sliding?
         // if bish,queen,rook, do get_moves_sliding()
 
-        moves
+        movelist.into_iter().flat_map(|x| x).collect::<Vec<_>>()
     }
 
-    // fn get_pawn_attacks(&self) -> Iterator<> {
-    //     pawn_attack_map
-    // }
-}
-
-impl Position {
-    pub fn get_moves(&self, move_generator: MoveGenerator) -> Vec<Move> {
-        move_generator.get_moves(self)
+    // fn get_pawn_attacks(&self, square: Square) -> Iterator<Square> {
+    // return into_iter? umm... no
+    fn get_pawn_attacks(&self, square: Square) -> BitboardIterator {
+        // TODO this doesn't even check if attacking an enemy piece or not...
+        // Also, where are the regular pawn moves?
+        self.pawn_attack_map[square.0 as usize].iter()
     }
 }
 

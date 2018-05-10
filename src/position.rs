@@ -3,6 +3,8 @@ use std::fmt;
 use arrayvec::ArrayVec;
 
 use bitboard::Bitboard;
+use movegen::MoveGenerator;
+use moves::Move;
 use pieces::*;
 
 #[derive(Debug)]
@@ -33,7 +35,7 @@ pub struct Position {
 }
 
 impl Position {
-    pub fn new_default() -> Position {
+    pub fn new_default() -> Self {
         let bitboard_piece = ArrayVec::from([
             Bitboard(0x00FF00000000FF00u64),  // Pawn
             Bitboard(0x4200000000000042u64),  // Bishop
@@ -48,12 +50,16 @@ impl Position {
             Bitboard(0xFFFF000000000000u64),  // Black
         ]);
 
-        Position {
+        Self {
             bitboard_piece: bitboard_piece,
             bitboard_color: bitboard_color,
             piece_board: PieceBoard::new_default(),
             turn: Color::White,
         }
+    }
+
+    pub fn get_moves(&self, move_generator: &MoveGenerator) -> Vec<Move> {
+        move_generator.get_moves(self)
     }
 }
 
