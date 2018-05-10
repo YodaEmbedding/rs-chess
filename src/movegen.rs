@@ -12,20 +12,26 @@ type AttackMap = ArrayVec<[Bitboard; 64]>;
 pub struct MoveGenerator {
     // TODO why are these public?
     pub pawn_attack_map:   AttackMap,
+    pub knight_attack_map: AttackMap,
     pub bishop_attack_map: AttackMap,
     pub rook_attack_map:   AttackMap,
     pub queen_attack_map:  AttackMap,
+    pub king_attack_map:   AttackMap,
 }
 
 impl MoveGenerator {
     pub fn new() -> Self {
         Self {
-            pawn_attack_map:   Self::make_pawn_attack_map(),
-            bishop_attack_map: Self::make_bishop_attack_map(),
-            rook_attack_map:   Self::make_rook_attack_map(),
-            queen_attack_map:  Self::make_queen_attack_map(),
+            pawn_attack_map:    Self::make_pawn_attack_map(),
+            knight_attack_map:  Self::make_knight_attack_map(),
+            bishop_attack_map:  Self::make_bishop_attack_map(),
+            rook_attack_map:    Self::make_rook_attack_map(),
+            queen_attack_map:   Self::make_queen_attack_map(),
+            king_attack_map:    Self::make_king_attack_map(),
         }
     }
+
+    // TODO pawn, king, and knight attack maps might be clearer with convolution...
 
     // TODO consider moving these outside this class...
     // maybe a AttackMapGenerator?
@@ -43,17 +49,38 @@ impl MoveGenerator {
         attack_map
     }
 
+    fn make_knight_attack_map() -> AttackMap {
+        let mut attack_map = AttackMap::new();
+
+        for i in 0..64 {
+            let sq = Bitboard(1 << i);
+            let bb = Bitboard(
+                sq.shift_up()   .shift_up()   .shift_left() .0 |
+                sq.shift_up()   .shift_up()   .shift_right().0 |
+                sq.shift_down() .shift_down() .shift_left() .0 |
+                sq.shift_down() .shift_down() .shift_right().0 |
+                sq.shift_left() .shift_left() .shift_up()   .0 |
+                sq.shift_left() .shift_left() .shift_down() .0 |
+                sq.shift_right().shift_right().shift_up()   .0 |
+                sq.shift_right().shift_right().shift_down() .0);
+            attack_map.push(bb);
+        }
+
+        attack_map
+    }
+
     fn make_bishop_attack_map() -> AttackMap {
         let mut attack_map = AttackMap::new();
 
         for i in 0..64 {
             let rank = i / 8;
             let file = i % 8;
-            let bb = Bitboard(
+            let sq = Bitboard(1 << i);
+            let bb = Bitboard(!sq.0 & (
                 bitboard::A1H8.shift_up_n  (  rank).shift_right_n(  file).0 |
                 bitboard::A1H8.shift_down_n(7-rank).shift_left_n (7-file).0 |
                 bitboard::A8H1.shift_up_n  (  rank).shift_left_n (7-file).0 |
-                bitboard::A8H1.shift_down_n(7-rank).shift_right_n(  file).0);
+                bitboard::A8H1.shift_down_n(7-rank).shift_right_n(  file).0));
             attack_map.push(bb);
         }
 
@@ -66,9 +93,10 @@ impl MoveGenerator {
         for i in 0..64 {
             let rank = i / 8;
             let file = i % 8;
-            let bb = Bitboard(
+            let sq = Bitboard(1 << i);
+            let bb = Bitboard(!sq.0 & (
                 bitboard::Rank1.shift_up_n(rank).0 |
-                bitboard::FileA.shift_right_n(file).0);
+                bitboard::FileA.shift_right_n(file).0));
             attack_map.push(bb);
         }
 
@@ -82,6 +110,26 @@ impl MoveGenerator {
 
         for i in 0..64 {
             let bb = Bitboard(rook_attack_map[i].0 | bishop_attack_map[i].0);
+            attack_map.push(bb);
+        }
+
+        attack_map
+    }
+
+    fn make_king_attack_map() -> AttackMap {
+        let mut attack_map = AttackMap::new();
+
+        for i in 0..64 {
+            let sq = Bitboard(1 << i);
+            let bb = Bitboard(
+                sq.shift_up().0 |
+                sq.shift_up().shift_left().0 |
+                sq.shift_up().shift_right().0 |
+                sq.shift_down().0 |
+                sq.shift_down().shift_left().0 |
+                sq.shift_down().shift_right().0 |
+                sq.shift_left().0 |
+                sq.shift_right().0);
             attack_map.push(bb);
         }
 
@@ -106,13 +154,15 @@ impl MoveGenerator {
 
         for (i, piece) in pieces {
             let from = Square(i as u32);
+            let idx = from.0 as usize;
 
             let move_squares = match piece.piece_name {
-                PieceName::Pawn   => Self::get_pawn_attacks(   position, from, &self.pawn_attack_map),
-                PieceName::Bishop => Self::get_sliding_attacks(position, from, &self.bishop_attack_map),
-                PieceName::Rook   => Self::get_sliding_attacks(position, from, &self.rook_attack_map),
-                PieceName::Queen  => Self::get_sliding_attacks(position, from, &self.queen_attack_map),
-                _                 => bitboard::Empty.iter()
+                PieceName::Pawn   => Self::get_pawn_attacks(   position, from, self.pawn_attack_map[idx]),
+                PieceName::Knight => Self::get_knight_attacks( position, from, self.knight_attack_map[idx]),
+                PieceName::Bishop => Self::get_sliding_attacks(position, from, self.bishop_attack_map[idx]),
+                PieceName::Rook   => Self::get_sliding_attacks(position, from, self.rook_attack_map[idx]),
+                PieceName::Queen  => Self::get_sliding_attacks(position, from, self.queen_attack_map[idx]),
+                PieceName::King   => Self::get_sliding_attacks(position, from, self.king_attack_map[idx]),
             };
 
             // TODO flags...?
@@ -130,7 +180,7 @@ impl MoveGenerator {
     }
 
     fn get_pawn_attacks(position: &Position, square: Square,
-        attack_map: &AttackMap) -> BitboardIterator {
+        attacks: Bitboard) -> BitboardIterator {
 
         fn forward(turn: Color, bitboard: Bitboard, n: u64) -> Bitboard {
             match turn {
@@ -149,19 +199,29 @@ impl MoveGenerator {
         let single_move = Bitboard(move1.0 & unoccupied.0);
         let double_move = Bitboard(move2.0 & unoccupied.0 & unoccupied_prev.0);
 
-        let attacks = attack_map[square.0 as usize];
         let captures = Bitboard(attacks.0 & position.get_bb_enemy().0);
 
         Bitboard(captures.0 | single_move.0 | double_move.0).iter()
     }
 
+    fn get_knight_attacks(position: &Position, square: Square,
+        attacks: Bitboard) -> BitboardIterator {
+
+        Bitboard(attacks.0 & !position.get_bb_ally().0).iter()
+    }
+
+    fn get_king_attacks(position: &Position, square: Square,
+        attacks: Bitboard) -> BitboardIterator {
+
+        Bitboard(attacks.0 & !position.get_bb_ally().0).iter()
+    }
+
     fn get_sliding_attacks(position: &Position, square: Square,
-        attack_map: &AttackMap) -> BitboardIterator {
+        attacks: Bitboard) -> BitboardIterator {
 
         let turn = position.turn;
         let sq_bb = Bitboard::from(square);
 
-        let attacks = attack_map[square.0 as usize];
         let captures = Bitboard(attacks.0 & position.get_bb_enemy().0);
 
         // TODO use magics?

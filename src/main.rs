@@ -12,7 +12,6 @@ use std::fmt;
 
 use game::Game;
 use moves::Move;
-use pieces::Color;
 use pieces::PieceName;
 use position::Position;
 use square::Square;
@@ -26,29 +25,28 @@ fn iterable_join<I, T>(v: I, sep: &str) -> String
         .join(sep)
 }
 
-fn main() {
-    let mut game = Game::new();
-    let bbs = game.move_generator.bishop_attack_map.iter()
-        .map(|x| format!("{}", x))
-        .take(2)
-        .collect::<Vec<_>>();
-    println!("\n{}", bbs.join("\n\n"));
-
-    let bb = game.move_generator.bishop_attack_map[2];
-    let sbb = iterable_join(bb.iter(), " ");
-    println!("\n{}\n{}", sbb, bb);
-
-    let position = Position::new_default();
-    println!("\n{}", position);
-    println!("\n{}", position.bitboard_piece[PieceName::Pawn as usize]);
-
-    // game.position.turn = Color::Black;
-    let mut moves = game.get_moves().iter()
+fn iterator_join_sorted<I, T>(v: I, sep: &str) -> String
+    where I: Iterator<Item=T>,
+          T: fmt::Display {
+    let mut v_ = v
         .map(|x| x.to_string())
         .collect::<Vec<_>>();
-    moves.sort();
-    println!("\n[{}]", moves.join(" "));
-    // println!("\n[{}]", iterable_join(game.get_moves().iter(), " "));
+    v_.sort();
+    v_.join(sep)
+}
+
+fn main() {
+    let mut game = Game::new();
+
+    let bbs = game.move_generator.knight_attack_map.iter();
+    println!("\n{}", iterator_join_sorted(bbs.take(2), "\n\n"));
+
+    let bb = game.move_generator.knight_attack_map[2];
+    println!("\n{}\n{}", iterable_join(bb.iter(), " "), bb);
+
+    println!("\n{}", game.position);
+    println!("\n{}", game.position.bitboard_piece[PieceName::Pawn as usize]);
+    println!("\n[{}]", iterator_join_sorted(game.get_moves().iter(), " "));
 
     let move_ = Move::new(Square(0x0C), Square(0x1C), 0x00);
     println!("\n{}", move_);
