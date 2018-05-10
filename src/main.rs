@@ -9,7 +9,6 @@ mod position;
 mod square;
 
 use std::fmt;
-use std::slice::Iter;
 
 use game::Game;
 use moves::Move;

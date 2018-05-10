@@ -1,5 +1,3 @@
-use std::slice::Iter;
-
 use arrayvec::ArrayVec;
 
 use bitboard;
@@ -110,8 +108,11 @@ impl MoveGenerator {
             let from = Square(i as u32);
 
             let move_squares = match piece.piece_name {
-                PieceName::Pawn => self.get_pawn_attacks(position, from),
-                _               => bitboard::Empty.iter()
+                PieceName::Pawn   => Self::get_pawn_attacks(   position, from, &self.pawn_attack_map),
+                PieceName::Bishop => Self::get_sliding_attacks(position, from, &self.bishop_attack_map),
+                PieceName::Rook   => Self::get_sliding_attacks(position, from, &self.rook_attack_map),
+                PieceName::Queen  => Self::get_sliding_attacks(position, from, &self.queen_attack_map),
+                _                 => bitboard::Empty.iter()
             };
 
             // TODO flags...?
@@ -128,7 +129,9 @@ impl MoveGenerator {
         movelist.into_iter().flat_map(|x| x).collect::<Vec<_>>()
     }
 
-    fn get_pawn_attacks(&self, position: &Position, square: Square) -> BitboardIterator {
+    fn get_pawn_attacks(position: &Position, square: Square,
+        attack_map: &AttackMap) -> BitboardIterator {
+
         fn forward(turn: Color, bitboard: Bitboard, n: u64) -> Bitboard {
             match turn {
                 Color::White => Bitboard(bitboard.0 << n),
@@ -146,10 +149,28 @@ impl MoveGenerator {
         let single_move = Bitboard(move1.0 & unoccupied.0);
         let double_move = Bitboard(move2.0 & unoccupied.0 & unoccupied_prev.0);
 
-        let attack_map = self.pawn_attack_map[square.0 as usize].0;
-        let captures = Bitboard(attack_map & position.get_bb_enemy().0);
+        let attacks = attack_map[square.0 as usize];
+        let captures = Bitboard(attacks.0 & position.get_bb_enemy().0);
 
         Bitboard(captures.0 | single_move.0 | double_move.0).iter()
+    }
+
+    fn get_sliding_attacks(position: &Position, square: Square,
+        attack_map: &AttackMap) -> BitboardIterator {
+
+        let turn = position.turn;
+        let sq_bb = Bitboard::from(square);
+
+        let attacks = attack_map[square.0 as usize];
+        let captures = Bitboard(attacks.0 & position.get_bb_enemy().0);
+
+        // TODO use magics?
+        // How do we fill only relevant attacks?
+        // Also, should the attack_maps mask away:
+        //   - own piece square (!!!)
+        //   - redundant squares
+
+        bitboard::Empty.iter()
     }
 }
 
