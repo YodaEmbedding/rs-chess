@@ -4,8 +4,8 @@ use std::fmt;
 pub struct Square(pub u32);
 
 impl Square {
-    #[inline] pub fn get_rank(&self) -> u32 { self.0 >> 3 }
-    #[inline] pub fn get_file(&self) -> u32 { self.0 & 0x07 }
+    #[inline] pub fn get_file(&self) -> u8 { (self.0      & 0x07) as u8 }
+    #[inline] pub fn get_rank(&self) -> u8 { (self.0 >> 3 & 0x07) as u8 }
 }
 
 impl fmt::Display for Square {

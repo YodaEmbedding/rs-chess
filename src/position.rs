@@ -61,6 +61,12 @@ impl Position {
     pub fn get_moves(&self, move_generator: &MoveGenerator) -> Vec<Move> {
         move_generator.get_moves(self)
     }
+
+    #[inline] pub fn get_bb_white(&self) -> Bitboard { self.bitboard_color[Color::White as usize] }
+    #[inline] pub fn get_bb_black(&self) -> Bitboard { self.bitboard_color[Color::Black as usize] }
+    #[inline] pub fn get_bb_ally (&self) -> Bitboard { self.bitboard_color[self.turn as usize] }
+    #[inline] pub fn get_bb_enemy(&self) -> Bitboard { self.bitboard_color[self.turn.opposite() as usize] }
+    #[inline] pub fn get_bb_all  (&self) -> Bitboard { Bitboard(self.bitboard_color[0].0 | self.bitboard_color[1].0) }
 }
 
 impl fmt::Display for Position {

@@ -2,6 +2,7 @@ use std::fmt;
 
 use square::Square;
 
+// Consider implementing relevant std::ops
 // Consider using pleco library?
 // Or even better: bit_collection... looks quite complicated but probably fast too
 // #[derive(BitCollection)]

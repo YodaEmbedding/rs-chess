@@ -47,6 +47,15 @@ pub struct Piece {
 #[derive(Debug)]
 pub struct PieceBoard(pub ArrayVec<[Option<Piece>; 64]>);
 
+impl Color {
+    pub fn opposite(&self) -> Self {
+        match *self {
+            Color::White => Color::Black,
+            Color::Black => Color::White
+        }
+    }
+}
+
 impl Piece {
     pub fn new(piece_name: PieceName, color: Color) -> Self {
         Self { piece_name: piece_name, color: color }

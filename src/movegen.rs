@@ -79,7 +79,6 @@ impl MoveGenerator {
 
     fn make_queen_attack_map() -> AttackMap {
         let mut attack_map = AttackMap::new();
-        // TODO maybe accept these as arguments instead of recomputing
         let rook_attack_map   = Self::make_rook_attack_map();
         let bishop_attack_map = Self::make_bishop_attack_map();
 
@@ -96,34 +95,23 @@ impl MoveGenerator {
     const INITIAL_MOVELIST_CAPACITY: usize = 64;
 
     pub fn get_moves(&self, position: &Position) -> Vec<Move> {
-        // TODO position.turn.opposite()
-        let player_color = Color::White;
-        let enemy_color  = Color::Black;
+        let ally_color  = position.turn;
+        let enemy_color = position.turn.opposite();
 
-        // TODO this kind of has implicit cloning... ehhhh
         let pieces = position.piece_board.0.iter()
-            .filter_map(|p| *p)
-            // .filter(|p| p.is_some())
-            // .map(   |p| p.unwrap())
-            .filter(|p| p.color == player_color);
-            // .filter(|p| p.color == player_color);
-            // .filter(|op| match *op {
-            //     Some(p) => p.color == player_color,
-            //     None    => false
-            // });
+            .enumerate()
+            .filter(|(i, p)| p.is_some())
+            .map(   |(i, p)| (i, p.unwrap()))
+            .filter(|(i, p)| p.color == ally_color);
 
-        // Consider Vec<Iter<Move>>
         let mut movelist: Vec<Vec<Move>> = Vec::with_capacity(Self::INITIAL_MOVELIST_CAPACITY);
 
-        // switch by piece type (or consider no-cost polymorphism?)
-        // for pawns, loop through all squares of attack map (check legality only for if piece exists) and also legal single pawn pushes
-        for (i, piece) in pieces.enumerate() {
+        for (i, piece) in pieces {
             let from = Square(i as u32);
 
-            // TODO move pattern match into separate function
             let move_squares = match piece.piece_name {
-                PieceName::Pawn => self.get_pawn_attacks(from),
-                _               => self.get_pawn_attacks(from) // TODO
+                PieceName::Pawn => self.get_pawn_attacks(position, from),
+                _               => bitboard::Empty.iter()
             };
 
             // TODO flags...?
@@ -140,12 +128,28 @@ impl MoveGenerator {
         movelist.into_iter().flat_map(|x| x).collect::<Vec<_>>()
     }
 
-    // fn get_pawn_attacks(&self, square: Square) -> Iterator<Square> {
-    // return into_iter? umm... no
-    fn get_pawn_attacks(&self, square: Square) -> BitboardIterator {
-        // TODO this doesn't even check if attacking an enemy piece or not...
-        // Also, where are the regular pawn moves?
-        self.pawn_attack_map[square.0 as usize].iter()
+    fn get_pawn_attacks(&self, position: &Position, square: Square) -> BitboardIterator {
+        fn forward(turn: Color, bitboard: Bitboard, n: u64) -> Bitboard {
+            match turn {
+                Color::White => Bitboard(bitboard.0 << n),
+                Color::Black => Bitboard(bitboard.0 >> n)
+            }
+        }
+
+        let turn = position.turn;
+        let sq_bb = Bitboard::from(square);
+        let move1 = forward(turn, sq_bb, 8);
+        let move2 = forward(turn, sq_bb, 16);
+
+        let unoccupied = Bitboard(!position.get_bb_all().0);
+        let unoccupied_prev = forward(turn, unoccupied, 8);
+        let single_move = Bitboard(move1.0 & unoccupied.0);
+        let double_move = Bitboard(move2.0 & unoccupied.0 & unoccupied_prev.0);
+
+        let attack_map = self.pawn_attack_map[square.0 as usize].0;
+        let captures = Bitboard(attack_map & position.get_bb_enemy().0);
+
+        Bitboard(captures.0 | single_move.0 | double_move.0).iter()
     }
 }
 

@@ -13,6 +13,7 @@ use std::slice::Iter;
 
 use game::Game;
 use moves::Move;
+use pieces::Color;
 use pieces::PieceName;
 use position::Position;
 use square::Square;
@@ -27,7 +28,7 @@ fn iterable_join<I, T>(v: I, sep: &str) -> String
 }
 
 fn main() {
-    let game = Game::new();
+    let mut game = Game::new();
     let bbs = game.move_generator.bishop_attack_map.iter()
         .map(|x| format!("{}", x))
         .take(2)
@@ -42,6 +43,7 @@ fn main() {
     println!("\n{}", position);
     println!("\n{}", position.bitboard_piece[PieceName::Pawn as usize]);
 
+    // game.position.turn = Color::Black;
     let mut moves = game.get_moves().iter()
         .map(|x| x.to_string())
         .collect::<Vec<_>>();
