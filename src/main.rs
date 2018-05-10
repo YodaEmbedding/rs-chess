@@ -1,6 +1,7 @@
 extern crate arrayvec;
 
 mod bitboard;
+mod evaluate;
 mod game;
 mod movegen;
 mod moves;
@@ -45,7 +46,7 @@ fn main() {
     println!("\n{}\n{}", iterable_join(bb.iter(), " "), bb);
 
     println!("\n{}", game.position);
-    println!("\n{}", game.position.bitboard_piece[PieceName::Pawn as usize]);
+    println!("\nStatic evaluation: {}", game.position.evaluate_normalized());
     println!("\n[{}]", iterator_join_sorted(game.get_moves().iter(), " "));
 
     let move_ = Move::new(Square(0x0C), Square(0x1C), 0x00);
