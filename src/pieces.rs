@@ -4,6 +4,8 @@ use std::string::String;
 
 use arrayvec::ArrayVec;
 
+use moves::Move;
+
 // enum Direction {
 //   North =  8,
 //   East  =  1,
@@ -93,6 +95,16 @@ impl PieceBoard {
             br!(), bn!(), bb!(), bq!(), bk!(), bb!(), bn!(), br!(),
         ]))
     }
+
+    pub fn make_move(&self, move_: Move) -> Self {
+        let from = move_.get_from();
+        let to   = move_.get_to();
+
+        let mut pb = self.clone();
+        pb.0[to.0   as usize] = pb.0[from.0 as usize];
+        pb.0[from.0 as usize] = None;
+        pb
+    }
 }
 
 impl PieceName {
@@ -105,6 +117,12 @@ impl PieceName {
             PieceName::Queen  => 'q',
             PieceName::King   => 'k'
         }
+    }
+}
+
+impl Clone for PieceBoard {
+    fn clone(&self) -> Self {
+        PieceBoard(self.0.clone())
     }
 }
 

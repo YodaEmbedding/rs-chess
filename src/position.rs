@@ -2,6 +2,7 @@ use std::fmt;
 
 use arrayvec::ArrayVec;
 
+use bitboard;
 use bitboard::Bitboard;
 use movegen::MoveGenerator;
 use moves::Move;
@@ -60,6 +61,37 @@ impl Position {
 
     pub fn get_moves(&self, move_generator: &MoveGenerator) -> Vec<Move> {
         move_generator.get_moves(self)
+    }
+
+    pub fn make_move(&self, move_: Move) -> Self {
+        let piece_board = self.piece_board.make_move(move_);
+
+        // TODO make move on bitboard_pieces directly?
+        Self::from(&piece_board, self.turn.opposite())
+    }
+
+    pub fn from(piece_board: &PieceBoard, turn: Color) -> Self {
+        let mut bitboard_piece = ArrayVec::from([bitboard::Empty; PIECE_NAME_SIZE]);
+        let mut bitboard_color = ArrayVec::from([bitboard::Empty; COLOR_SIZE]);
+        let pieces = piece_board.0.iter()
+            .enumerate()
+            .filter(|(i, p)| p.is_some())
+            .map(   |(i, p)| (i, p.unwrap()));
+
+        for (i, piece) in pieces {
+            let sq: u64 = 1 << i;
+            let piece_idx = piece.piece_name as usize;
+            let color_idx = piece.color      as usize;
+            bitboard_piece[piece_idx] = Bitboard(bitboard_piece[piece_idx].0 ^ sq);
+            bitboard_color[color_idx] = Bitboard(bitboard_color[color_idx].0 ^ sq);
+        }
+
+        Self {
+            bitboard_piece: bitboard_piece,
+            bitboard_color: bitboard_color,
+            piece_board: piece_board.clone(),
+            turn: turn
+        }
     }
 
     #[inline] pub fn get_bb_white(&self) -> Bitboard { self.bitboard_color[Color::White as usize] }

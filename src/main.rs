@@ -7,6 +7,7 @@ mod movegen;
 mod moves;
 mod pieces;
 mod position;
+mod search;
 mod square;
 
 use std::fmt;
@@ -47,10 +48,13 @@ fn main() {
 
     println!("\n{}", game.position);
     println!("\nStatic evaluation: {}", game.position.evaluate_normalized());
+    println!("\n{}", game.position);
     println!("\n[{}]", iterator_join_sorted(game.get_moves().iter(), " "));
 
-    let move_ = Move::new(Square(0x0C), Square(0x1C), 0x00);
-    println!("\n{}", move_);
+    // let move_ = Move::new(Square(0x0C), Square(0x1C), 0x00);
+    // println!("\n{}", move_);
+
+    println!("\nBest move: {}", game.get_best_move())
 }
 
 // TODO
