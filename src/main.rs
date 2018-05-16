@@ -54,7 +54,9 @@ fn main() {
     // let move_ = Move::new(Square(0x0C), Square(0x1C), 0x00);
     // println!("\n{}", move_);
 
-    println!("\nBest move: {}", game.get_best_move())
+    let (best_move, score) = game.get_best_move();
+    println!("\nBest move: {}", best_move);
+    println!("\nEvaluation: {}", score);
 }
 
 // TODO

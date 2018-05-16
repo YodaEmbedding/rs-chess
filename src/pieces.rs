@@ -53,7 +53,14 @@ impl Color {
     pub fn opposite(&self) -> Self {
         match *self {
             Color::White => Color::Black,
-            Color::Black => Color::White
+            Color::Black => Color::White,
+        }
+    }
+
+    pub fn to_int(&self) -> i32 {
+        match *self {
+            Color::White =>  1,
+            Color::Black => -1,
         }
     }
 }
