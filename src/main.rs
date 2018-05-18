@@ -41,23 +41,17 @@ fn iterator_join_sorted<I, T>(v: I, sep: &str) -> String
 fn main() {
     let mut game = Game::new();
 
-    // let bbs = game.move_generator.knight_attack_map.iter();
-    // println!("\n{}", iterator_join_sorted(bbs.take(2), "\n\n"));
-
-    // let bb = game.move_generator.knight_attack_map[2];
-    // println!("\n{}\n{}", iterable_join(bb.iter(), " "), bb);
-
-    // let move_ = Move::new(Square(0x0C), Square(0x1C), 0x00);
-    // println!("\n{}", move_);
+    println!("\n");
 
     loop {
-        println!("\n{}", game.position);
-        println!("\n[{}]", iterator_join_sorted(game.get_moves().iter(), " "));
-        println!("\nStatic evaluation: {:.2}", normalize_evaluation(game.position.evaluate()));
-
         let (best_move, score) = game.get_best_move();
-        println!("Depth evaluation: {:.2}", normalize_evaluation(score));
+
+        println!("[{}]", iterator_join_sorted(game.get_moves().iter(), " "));
+        println!("\n{}", game.position);
+        println!("\nStatic evaluation: {:.2}", normalize_evaluation(game.position.evaluate()));
+        println!(   "Depth evaluation: {:.2}", normalize_evaluation(score));
         println!("Best move: {}", best_move);
+        println!("\n");
 
         game.make_move(best_move);
     }
@@ -65,8 +59,6 @@ fn main() {
 
 // TODO
 // Magics
-// Evaluation
-// a-b
 
 // Experiment: Delta static evaluation (positional evaluation remains largely same between most positions)
 

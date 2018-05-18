@@ -14,7 +14,7 @@ impl Game {
         //      should this loop be inside alpha beta instead?
         self.position.get_moves(&self.move_generator).into_iter()
             .map(|m| (m, self.position.make_move(m)))
-            .map(|(m, p)| (m, self.negamax(&p, 4, -color, std::i32::MIN + 1, std::i32::MAX)))
+            .map(|(m, p)| (m, self.negamax(&p, 3, -color, std::i32::MIN + 1, std::i32::MAX)))
             .max_by_key(|(m, v)| color * v)
             .unwrap()
     }
