@@ -10,9 +10,11 @@ impl Game {
     pub fn get_best_move(&self) -> (Move, i32) {
         let color = self.position.turn.to_int();  // 1 or -1 for white/black
 
+        // TODO should we really consider all moves?
+        //      should this loop be inside alpha beta instead?
         self.position.get_moves(&self.move_generator).into_iter()
             .map(|m| (m, self.position.make_move(m)))
-            .map(|(m, p)| (m, self.negamax(&p, 3, -color, std::i32::MIN + 1, std::i32::MAX)))
+            .map(|(m, p)| (m, self.negamax(&p, 4, -color, std::i32::MIN + 1, std::i32::MAX)))
             .max_by_key(|(m, v)| color * v)
             .unwrap()
     }
@@ -23,7 +25,7 @@ impl Game {
         if depth == 0 { return position.evaluate(); }
 
         let mut a = alpha;
-        let mut best = std::i32::MIN;
+        let mut best = std::i32::MIN + 1;
         let positions = position.get_moves(&self.move_generator).into_iter()
             .map(|m| position.make_move(m));
 

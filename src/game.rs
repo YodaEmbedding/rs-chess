@@ -19,5 +19,9 @@ impl Game {
     pub fn get_moves(&self) -> Vec<Move> {
         self.position.get_moves(&self.move_generator)
     }
+
+    pub fn make_move(&mut self, move_: Move) {
+        self.position = self.position.make_move(move_);
+    }
 }
 

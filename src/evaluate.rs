@@ -1,7 +1,10 @@
-use arrayvec::ArrayVec;
-
-use position::Position;
 use pieces::{Color, PieceName};
+use position::Position;
+
+/// Standardized measurements in pawn units
+pub fn normalize_evaluation(val: i32) -> f64 {
+    0.01 * val as f64
+}
 
 impl Position {
     pub fn evaluate(&self) -> i32 {
@@ -12,16 +15,10 @@ impl Position {
         self.evaluate_material(game_phase) + self.evaluate_center(game_phase)
     }
 
-    /// Standardized measurements in pawn units
-    pub fn evaluate_normalized(&self) -> f64 {
-        0.01 * self.evaluate() as f64
-    }
-
     fn evaluate_material(&self, game_phase: u8) -> i32 {
         let w = self.get_bb_white();
         let b = self.get_bb_black();
 
-        // const MaterialValuesMg: ArrayVec<[i32; 5]> = ArrayVec::from([
         const MaterialValuesMg: [i32; 5] = [
             171,   // Pawn
             764,   // Knight

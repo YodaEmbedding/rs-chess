@@ -141,11 +141,14 @@ impl fmt::Display for PieceName {
 
 impl fmt::Display for Piece {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let s = format!("{}", self.piece_name);
+        // NOTE: the white and black pieces are inverted,
+        // since they appear differently on an inverted terminal
+        let white = ["♟", "♞", "♝", "♜", "♛", "♚"];
+        let black = ["♙", "♘", "♗", "♖", "♕", "♔"];
 
         write!(f, "{}", match self.color {
-            Color::White => s.to_uppercase(),
-            Color::Black => s
+            Color::White => white[self.piece_name as usize],
+            Color::Black => black[self.piece_name as usize]
         })
     }
 }
@@ -160,7 +163,7 @@ impl fmt::Display for PieceBoard {
         }
 
         let xs = self.0.iter().map(opt_piece_to_str).collect::<Vec<_>>();
-        let rows = xs.chunks(8).map(|x| x.join("")).rev().collect::<Vec<_>>();
+        let rows = xs.chunks(8).map(|x| x.join(" ")).rev().collect::<Vec<_>>();
         let grid = rows.join("\n");
 
         write!(f, "{}", grid)
