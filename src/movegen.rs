@@ -162,7 +162,7 @@ impl MoveGenerator {
                 PieceName::Bishop => Self::get_sliding_attacks(position, from, self.bishop_attack_map[idx]),
                 PieceName::Rook   => Self::get_sliding_attacks(position, from, self.rook_attack_map[idx]),
                 PieceName::Queen  => Self::get_sliding_attacks(position, from, self.queen_attack_map[idx]),
-                PieceName::King   => Self::get_sliding_attacks(position, from, self.king_attack_map[idx]),
+                PieceName::King   => Self::get_king_attacks(   position, from, self.king_attack_map[idx]),
             };
 
             // TODO flags...?
@@ -218,6 +218,7 @@ impl MoveGenerator {
 
     fn get_sliding_attacks(position: &Position, square: Square,
         attacks: Bitboard) -> BitboardIterator {
+        // How can this actually work...? Different depending on piece type, no?
 
         let turn = position.turn;
         let sq_bb = Bitboard::from(square);

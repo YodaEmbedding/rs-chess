@@ -6,6 +6,7 @@ use square::Square;
 // Consider using pleco library?
 // Or even better: bit_collection... looks quite complicated but probably fast too
 // #[derive(BitCollection)]
+// TODO Or even better: just inline overload useful operators
 #[derive(Debug, Copy, Clone)]
 pub struct Bitboard(pub u64);
 
