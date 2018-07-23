@@ -5,18 +5,33 @@ use game::Game;
 use moves::Move;
 use position::Position;
 
+#[derive(Debug, Clone, Copy)]
+pub enum GameError {
+    Checkmate,
+    Stalemate,
+}
+
 impl Game {
+    #[flame]
     /// Returns tuple of best move and evaluation score
-    pub fn get_best_move(&self) -> (Move, i32) {
+    pub fn get_best_move(&self) -> Result<(Move, i32), GameError> {
         let color = self.position.turn.to_int();  // 1 or -1 for white/black
+
+        // TODO No legal moves exception: stalemate, checkmate
+        let moves = self.position.get_moves(&self.move_generator);
+
+        // TODO always returns stalemate?
+        if moves.len() == 0 { return Err(GameError::Stalemate); }
 
         // TODO should we really consider all moves?
         //      should this loop be inside alpha beta instead?
-        self.position.get_moves(&self.move_generator).into_iter()
+        let best = moves.into_iter()
             .map(|m| (m, self.position.make_move(m)))
-            .map(|(m, p)| (m, self.negamax(&p, 3, -color, std::i32::MIN + 1, std::i32::MAX)))
+            .map(|(m, p)| (m, self.negamax(&p, 5, -color, std::i32::MIN + 1, std::i32::MAX)))
             .max_by_key(|(m, v)| color * v)
-            .unwrap()
+            .unwrap();
+
+        Ok(best)
     }
 
     fn negamax(&self, position: &Position, depth: u32, color: i32,

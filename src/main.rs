@@ -1,4 +1,8 @@
+#![feature(plugin, custom_attribute)]
+#![plugin(flamer)]
+
 extern crate arrayvec;
+extern crate flame;
 
 mod bitboard;
 mod evaluate;
@@ -11,6 +15,7 @@ mod search;
 mod square;
 
 use std::fmt;
+use std::fs::File;
 
 use evaluate::normalize_evaluation;
 use game::Game;
@@ -44,7 +49,12 @@ fn main() {
     println!("\n");
 
     loop {
-        let (best_move, score) = game.get_best_move();
+        let res = game.get_best_move();
+
+        let (best_move, score) = match res {
+            Ok(t) => t,
+            Err(e) => break
+        };
 
         println!("[{}]", iterator_join_sorted(game.get_moves().iter(), " "));
         println!("\n{}", game.position);
@@ -55,6 +65,8 @@ fn main() {
 
         game.make_move(best_move);
     }
+
+    flame::dump_html(&mut File::create("flame-graph.html").unwrap()).unwrap();
 }
 
 // TODO

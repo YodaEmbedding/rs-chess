@@ -7,4 +7,6 @@ license = "MIT"
 
 [dependencies]
 arrayvec = "0.4.7"
+flame = "0.2.2"
+flamer = "^0.2.3"
 
