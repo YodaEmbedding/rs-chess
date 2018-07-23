@@ -179,6 +179,8 @@ impl MoveGenerator {
         movelist.into_iter().flat_map(|x| x).collect::<Vec<_>>()
     }
 
+    // TODO fix: double pawn move AFTER pawn has moved
+    // TODO fix: pawn capturing backwards (wat)
     fn get_pawn_attacks(position: &Position, square: Square,
         attacks: Bitboard) -> BitboardIterator {
 

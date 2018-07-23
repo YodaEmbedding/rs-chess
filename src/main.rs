@@ -59,8 +59,10 @@ fn main() {
         println!("[{}]", iterator_join_sorted(game.get_moves().iter(), " "));
         println!("\n{}", game.position);
         println!("\nStatic evaluation: {:.2}", normalize_evaluation(game.position.evaluate()));
-        println!(   "Depth evaluation: {:.2}", normalize_evaluation(score));
+        println!(  "Depth evaluation:  {:.2}", normalize_evaluation(score));
         println!("Best move: {}", best_move);
+        println!("\nStatic breakdown:");
+        println!("{}", game.position.evaluate_breakdown());
         println!("\n");
 
         game.make_move(best_move);

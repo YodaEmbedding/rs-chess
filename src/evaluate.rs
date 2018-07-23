@@ -12,7 +12,20 @@ impl Position {
         // TODO make this an enum...? Or maybe do linear interp?
 
         // Also add in king value to avoid captures...? But legal move gen does that...
-        self.evaluate_material(game_phase) + self.evaluate_center(game_phase)
+        (
+            self.evaluate_center  (game_phase) +
+            self.evaluate_material(game_phase)
+        )
+    }
+
+    pub fn evaluate_breakdown(&self) -> String {
+        let game_phase = 0u8;  // 0 = early game, 50 = midgame, 100 = endgame
+
+        macro_rules! f { () => { "{: <12} {}" }; }
+        [
+            format!(f!(), "Center",   self.evaluate_center  (game_phase)),
+            format!(f!(), "Material", self.evaluate_material(game_phase)),
+        ].join("\n")
     }
 
     fn evaluate_material(&self, game_phase: u8) -> i32 {
@@ -74,14 +87,16 @@ impl Position {
         ];
 
         // TODO color should be +1, -1 to prevent branching...
-        self.bitboard_piece[PieceName::Pawn as usize].iter()
+        let x: i32 = self.bitboard_piece[PieceName::Pawn as usize].iter()
             .map(|sq|
                 match self.piece_board.0[sq.0 as usize].unwrap().color {
                     Color::White =>  1 * PawnValuesMg[     sq.0 as usize],
                     Color::Black => -1 * PawnValuesMg[63 - sq.0 as usize],
                     // NOTE no need to rank/file index since matrix is symmetric
                 })
-            .sum()
+            .sum();
+
+        4 * x
     }
 }
 
