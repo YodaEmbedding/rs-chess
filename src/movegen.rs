@@ -11,7 +11,8 @@ type AttackMap = ArrayVec<[Bitboard; 64]>;
 
 pub struct MoveGenerator {
     // TODO why are these public?
-    pub pawn_attack_map:   AttackMap,
+    pub pawn_attack_map_w: AttackMap,
+    pub pawn_attack_map_b: AttackMap,
     pub knight_attack_map: AttackMap,
     pub bishop_attack_map: AttackMap,
     pub rook_attack_map:   AttackMap,
@@ -22,7 +23,8 @@ pub struct MoveGenerator {
 impl MoveGenerator {
     pub fn new() -> Self {
         Self {
-            pawn_attack_map:    Self::make_pawn_attack_map(),
+            pawn_attack_map_w:  Self::make_pawn_attack_map(false),
+            pawn_attack_map_b:  Self::make_pawn_attack_map(true),
             knight_attack_map:  Self::make_knight_attack_map(),
             bishop_attack_map:  Self::make_bishop_attack_map(),
             rook_attack_map:    Self::make_rook_attack_map(),
@@ -35,8 +37,20 @@ impl MoveGenerator {
 
     // TODO consider moving these outside this class...
     // maybe a AttackMapGenerator?
-    fn make_pawn_attack_map() -> AttackMap {
+    fn make_pawn_attack_map(flip: bool) -> AttackMap {
         let mut attack_map = AttackMap::new();
+
+        if flip {
+            for i in 0..64 {
+                let sq = Bitboard(1 << i);
+                let bb = Bitboard(
+                    sq.shift_down().shift_left().0 |
+                    sq.shift_down().shift_right().0);
+                attack_map.push(bb);
+            }
+
+            return attack_map;
+        }
 
         for i in 0..64 {
             let sq = Bitboard(1 << i);
@@ -157,7 +171,10 @@ impl MoveGenerator {
             let idx = from.0 as usize;
 
             let move_squares = match piece.piece_name {
-                PieceName::Pawn   => Self::get_pawn_attacks(   position, from, self.pawn_attack_map[idx]),
+                PieceName::Pawn   => match position.turn {
+                    Color::White  => Self::get_pawn_attacks(   position, from, self.pawn_attack_map_w[idx]),
+                    Color::Black  => Self::get_pawn_attacks(   position, from, self.pawn_attack_map_b[idx]),
+                },
                 PieceName::Knight => Self::get_knight_attacks( position, from, self.knight_attack_map[idx]),
                 PieceName::Bishop => Self::get_sliding_attacks(position, from, self.bishop_attack_map[idx]),
                 PieceName::Rook   => Self::get_sliding_attacks(position, from, self.rook_attack_map[idx]),
