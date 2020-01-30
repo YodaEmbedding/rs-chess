@@ -73,33 +73,33 @@ impl Piece {
 
 impl PieceBoard {
     pub fn new_default() -> Self {
-        macro_rules! opt_piece {
-            ($p:expr, $c:expr) => (Some(Piece::new($p, $c)))
-        }
+        use PieceName::*;
+        use Color::*;
 
-        macro_rules! wp { () => (opt_piece!(PieceName::Pawn,   Color::White)) }
-        macro_rules! wn { () => (opt_piece!(PieceName::Knight, Color::White)) }
-        macro_rules! wb { () => (opt_piece!(PieceName::Bishop, Color::White)) }
-        macro_rules! wr { () => (opt_piece!(PieceName::Rook,   Color::White)) }
-        macro_rules! wq { () => (opt_piece!(PieceName::Queen,  Color::White)) }
-        macro_rules! wk { () => (opt_piece!(PieceName::King,   Color::White)) }
-        macro_rules! bp { () => (opt_piece!(PieceName::Pawn,   Color::Black)) }
-        macro_rules! bn { () => (opt_piece!(PieceName::Knight, Color::Black)) }
-        macro_rules! bb { () => (opt_piece!(PieceName::Bishop, Color::Black)) }
-        macro_rules! br { () => (opt_piece!(PieceName::Rook,   Color::Black)) }
-        macro_rules! bq { () => (opt_piece!(PieceName::Queen,  Color::Black)) }
-        macro_rules! bk { () => (opt_piece!(PieceName::King,   Color::Black)) }
+        let xx = None::<Piece>;
+        let wp = Some(Piece::new(Pawn,   White));
+        let wn = Some(Piece::new(Knight, White));
+        let wb = Some(Piece::new(Bishop, White));
+        let wr = Some(Piece::new(Rook,   White));
+        let wq = Some(Piece::new(Queen,  White));
+        let wk = Some(Piece::new(King,   White));
+        let bp = Some(Piece::new(Pawn,   Black));
+        let bn = Some(Piece::new(Knight, Black));
+        let bb = Some(Piece::new(Bishop, Black));
+        let br = Some(Piece::new(Rook,   Black));
+        let bq = Some(Piece::new(Queen,  Black));
+        let bk = Some(Piece::new(King,   Black));
 
         // TODO incomplete table
         PieceBoard(ArrayVec::from([
-            wr!(), wn!(), wb!(), wq!(), wk!(), wb!(), wn!(), wr!(),
-            wp!(), wp!(), wp!(), wp!(), wp!(), wp!(), wp!(), wp!(),
-            None, None, None, None, None, None, None, None,
-            None, None, None, None, None, None, None, None,
-            None, None, None, None, None, None, None, None,
-            None, None, None, None, None, None, None, None,
-            bp!(), bp!(), bp!(), bp!(), bp!(), bp!(), bp!(), bp!(),
-            br!(), bn!(), bb!(), bq!(), bk!(), bb!(), bn!(), br!(),
+            wr, wn, wb, wq, wk, wb, wn, wr,
+            wp, wp, wp, wp, wp, wp, wp, wp,
+            xx, xx, xx, xx, xx, xx, xx, xx,
+            xx, xx, xx, xx, xx, xx, xx, xx,
+            xx, xx, xx, xx, xx, xx, xx, xx,
+            xx, xx, xx, xx, xx, xx, xx, xx,
+            bp, bp, bp, bp, bp, bp, bp, bp,
+            br, bn, bb, bq, bk, bb, bn, br,
         ]))
     }
 
