@@ -64,6 +64,7 @@ impl Position {
         let b = self.get_bb_black();
 
         // From stockfish/psqt.cpp
+        #[rustfmt::skip]
         const PawnValuesMg: [i32; 64] = [
               0,   0,   0,   0,   0,   0,   0,   0,
               0,   0,   0,   0,   0,   0,   0,   0,
@@ -75,6 +76,7 @@ impl Position {
              -4,  20,  -8,  -4,  -4,  -8,  20,  -4,
         ];
 
+        #[rustfmt::skip]
         const PawnValuesEg: [i32; 64] = [
              0,  0,  0,  0,  0,  0,  0,  0,
              0,  0,  0,  0,  0,  0,  0,  0,

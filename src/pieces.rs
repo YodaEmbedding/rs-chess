@@ -91,7 +91,8 @@ impl PieceBoard {
         let bk = Some(Piece::new(King,   Black));
 
         // TODO incomplete table
-        PieceBoard(ArrayVec::from([
+        #[rustfmt::skip]
+        let piece_board = PieceBoard(ArrayVec::from([
             wr, wn, wb, wq, wk, wb, wn, wr,
             wp, wp, wp, wp, wp, wp, wp, wp,
             xx, xx, xx, xx, xx, xx, xx, xx,
@@ -100,7 +101,9 @@ impl PieceBoard {
             xx, xx, xx, xx, xx, xx, xx, xx,
             bp, bp, bp, bp, bp, bp, bp, bp,
             br, bn, bb, bq, bk, bb, bn, br,
-        ]))
+        ]));
+
+        piece_board
     }
 
     pub fn make_move(&self, move_: Move) -> Self {

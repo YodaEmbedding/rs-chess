@@ -1,7 +1,6 @@
 use arrayvec::ArrayVec;
 
-use crate::bitboard;
-use crate::bitboard::{Bitboard, BitboardIterator};
+use crate::bitboard::*;
 use crate::moves::Move;
 use crate::pieces::{Color, PieceName};
 use crate::position::Position;
@@ -90,11 +89,12 @@ impl MoveGenerator {
             let rank = i / 8;
             let file = i % 8;
             let sq = Bitboard(1 << i);
-            let bb = Bitboard(!sq.0 & (
-                bitboard::A1H8.shift_up_n  (  rank).shift_right_n(  file).0 |
-                bitboard::A1H8.shift_down_n(7-rank).shift_left_n (7-file).0 |
-                bitboard::A8H1.shift_up_n  (  rank).shift_left_n (7-file).0 |
-                bitboard::A8H1.shift_down_n(7-rank).shift_right_n(  file).0));
+            let mask = (
+                A1H8.shift_up_n  (  rank).shift_right_n(  file).0 |
+                A1H8.shift_down_n(7-rank).shift_left_n (7-file).0 |
+                A8H1.shift_up_n  (  rank).shift_left_n (7-file).0 |
+                A8H1.shift_down_n(7-rank).shift_right_n(  file).0);
+            let bb = Bitboard(!sq.0 & mask);
             attack_map.push(bb);
         }
 
@@ -108,9 +108,8 @@ impl MoveGenerator {
             let rank = i / 8;
             let file = i % 8;
             let sq = Bitboard(1 << i);
-            let bb = Bitboard(!sq.0 & (
-                bitboard::Rank1.shift_up_n(rank).0 |
-                bitboard::FileA.shift_right_n(file).0));
+            let mask = Rank1.shift_up_n(rank).0 | FileA.shift_right_n(file).0;
+            let bb = Bitboard(!sq.0 & mask);
             attack_map.push(bb);
         }
 
@@ -250,7 +249,7 @@ impl MoveGenerator {
         //   - own piece square (!!!)
         //   - redundant squares
 
-        bitboard::Empty.iter()
+        Empty.iter()
     }
 }
 
