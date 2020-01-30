@@ -71,13 +71,13 @@ impl Position {
 
     pub fn from(piece_board: &PieceBoard, turn: Color) -> Self {
         let mut bitboard_piece =
-            ArrayVec::from([bitboard::Empty; PIECE_NAME_SIZE]);
-        let mut bitboard_color = ArrayVec::from([bitboard::Empty; COLOR_SIZE]);
+            ArrayVec::from([bitboard::EMPTY; PIECE_NAME_SIZE]);
+        let mut bitboard_color = ArrayVec::from([bitboard::EMPTY; COLOR_SIZE]);
         let pieces = piece_board
             .0
             .iter()
             .enumerate()
-            .filter(|(i, p)| p.is_some())
+            .filter(|(_i, p)| p.is_some())
             .map(|(i, p)| (i, p.unwrap()));
 
         for (i, piece) in pieces {

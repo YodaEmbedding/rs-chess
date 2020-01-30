@@ -14,18 +14,18 @@ pub struct BitboardIterator {
     bitboard: Bitboard,
 }
 
-pub const Empty: Bitboard = Bitboard(0x0000000000000000u64);
-pub const FileA: Bitboard = Bitboard(0x0101010101010101u64);
-pub const FileH: Bitboard = Bitboard(0x8080808080808080u64);
-pub const Rank1: Bitboard = Bitboard(0x00000000000000FFu64);
-pub const Rank8: Bitboard = Bitboard(0xFF00000000000000u64);
+pub const EMPTY: Bitboard = Bitboard(0x0000000000000000u64);
+pub const FILE_A: Bitboard = Bitboard(0x0101010101010101u64);
+pub const FILE_H: Bitboard = Bitboard(0x8080808080808080u64);
+pub const RANK_1: Bitboard = Bitboard(0x00000000000000FFu64);
+pub const RANK_8: Bitboard = Bitboard(0xFF00000000000000u64);
 pub const A1H8: Bitboard = Bitboard(0x8040201008040201u64);
 pub const A8H1: Bitboard = Bitboard(0x0102040810204080u64);
 
 pub const A1: Bitboard = Bitboard(1 << 7);
 pub const A8: Bitboard = Bitboard(1 << 7);
 
-pub const HorzShiftMask: [Bitboard; 9] = [
+pub const HORZ_SHIFT_MASK: [Bitboard; 9] = [
     Bitboard(0x0000000000000000u64),
     Bitboard(0x0101010101010101u64),
     Bitboard(0x0303030303030303u64),
@@ -37,7 +37,7 @@ pub const HorzShiftMask: [Bitboard; 9] = [
     Bitboard(0xFFFFFFFFFFFFFFFFu64),
 ];
 
-pub const VertShiftMask: [Bitboard; 9] = [
+pub const VERT_SHIFT_MASK: [Bitboard; 9] = [
     Bitboard(0x0000000000000000u64),
     Bitboard(0x00000000000000FFu64),
     Bitboard(0x000000000000FFFFu64),
@@ -60,35 +60,35 @@ impl Bitboard {
 
     #[inline]
     pub fn shift_left(&self) -> Self {
-        Bitboard((self.0 & !FileA.0) >> 1)
+        Bitboard((self.0 & !FILE_A.0) >> 1)
     }
 
     #[inline]
     pub fn shift_right(&self) -> Self {
-        Bitboard((self.0 & !FileH.0) << 1)
+        Bitboard((self.0 & !FILE_H.0) << 1)
     }
 
     #[inline]
     pub fn shift_up(&self) -> Self {
-        Bitboard((self.0 & !Rank8.0) << 8)
+        Bitboard((self.0 & !RANK_8.0) << 8)
     }
 
     #[inline]
     pub fn shift_down(&self) -> Self {
-        Bitboard((self.0 & !Rank1.0) >> 8)
+        Bitboard((self.0 & !RANK_1.0) >> 8)
     }
 
     pub fn shift_left_n(&self, n: usize) -> Self {
-        Bitboard((self.0 & !HorzShiftMask[n].0) >> n)
+        Bitboard((self.0 & !HORZ_SHIFT_MASK[n].0) >> n)
     }
     pub fn shift_right_n(&self, n: usize) -> Self {
-        Bitboard((self.0 & HorzShiftMask[8 - n].0) << n)
+        Bitboard((self.0 & HORZ_SHIFT_MASK[8 - n].0) << n)
     }
     pub fn shift_up_n(&self, n: usize) -> Self {
-        Bitboard((self.0 & VertShiftMask[8 - n].0) << 8 * n)
+        Bitboard((self.0 & VERT_SHIFT_MASK[8 - n].0) << 8 * n)
     }
     pub fn shift_down_n(&self, n: usize) -> Self {
-        Bitboard((self.0 & !VertShiftMask[n].0) >> 8 * n)
+        Bitboard((self.0 & !VERT_SHIFT_MASK[n].0) >> 8 * n)
     }
 }
 

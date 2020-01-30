@@ -91,10 +91,10 @@ impl MoveGenerator {
             let rank = i / 8;
             let file = i % 8;
             let sq = Bitboard(1 << i);
-            let mask = (A1H8.shift_up_n(rank).shift_right_n(file).0
+            let mask = A1H8.shift_up_n(rank).shift_right_n(file).0
                 | A1H8.shift_down_n(7 - rank).shift_left_n(7 - file).0
                 | A8H1.shift_up_n(rank).shift_left_n(7 - file).0
-                | A8H1.shift_down_n(7 - rank).shift_right_n(file).0);
+                | A8H1.shift_down_n(7 - rank).shift_right_n(file).0;
             let bb = Bitboard(!sq.0 & mask);
             attack_map.push(bb);
         }
@@ -109,7 +109,7 @@ impl MoveGenerator {
             let rank = i / 8;
             let file = i % 8;
             let sq = Bitboard(1 << i);
-            let mask = Rank1.shift_up_n(rank).0 | FileA.shift_right_n(file).0;
+            let mask = RANK_1.shift_up_n(rank).0 | FILE_A.shift_right_n(file).0;
             let bb = Bitboard(!sq.0 & mask);
             attack_map.push(bb);
         }
@@ -157,16 +157,15 @@ impl MoveGenerator {
 
     pub fn get_moves(&self, position: &Position) -> Vec<Move> {
         let ally_color = position.turn;
-        let enemy_color = position.turn.opposite();
 
         let pieces = position
             .piece_board
             .0
             .iter()
             .enumerate()
-            .filter(|(i, p)| p.is_some())
+            .filter(|(_i, p)| p.is_some())
             .map(|(i, p)| (i, p.unwrap()))
-            .filter(|(i, p)| p.color == ally_color);
+            .filter(|(_i, p)| p.color == ally_color);
 
         let mut movelist: Vec<Vec<Move>> =
             Vec::with_capacity(Self::INITIAL_MOVELIST_CAPACITY);
@@ -292,7 +291,7 @@ impl MoveGenerator {
         //   - own piece square (!!!)
         //   - redundant squares
 
-        Empty.iter()
+        EMPTY.iter()
     }
 }
 

@@ -42,7 +42,7 @@ impl Game {
                     ),
                 )
             })
-            .max_by_key(|(m, v)| color * v)
+            .max_by_key(|(_m, v)| color * v)
             .unwrap();
 
         Ok(best)

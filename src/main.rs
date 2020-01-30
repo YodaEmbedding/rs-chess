@@ -18,10 +18,6 @@ use std::fs::File;
 
 use crate::evaluate::normalize_evaluation;
 use crate::game::Game;
-use crate::moves::Move;
-use crate::pieces::PieceName;
-use crate::position::Position;
-use crate::square::Square;
 
 fn iterable_join<I, T>(v: I, sep: &str) -> String
 where
@@ -51,7 +47,7 @@ fn main() {
 
         let (best_move, score) = match res {
             Ok(t) => t,
-            Err(e) => break,
+            Err(e) => { println!("{:?}", e); break },
         };
 
         println!("[{}]", iterator_join_sorted(game.get_moves().iter(), " "));

@@ -34,7 +34,7 @@ impl Position {
         let w = self.get_bb_white();
         let b = self.get_bb_black();
 
-        const MaterialValuesMg: [i32; 6] = [
+        const MATERIAL_VALUES_MG: [i32; 6] = [
             171,   // Pawn
             764,   // Knight
             826,   // Bishop
@@ -43,7 +43,7 @@ impl Position {
             65536, // King
         ];
 
-        const MaterialValuesEg: [i32; 6] = [
+        const MATERIAL_VALUES_EG: [i32; 6] = [
             240,   // Pawn
             848,   // Knight
             891,   // Bishop
@@ -58,18 +58,15 @@ impl Position {
                 (x.0 & w.0).count_ones() as i32
                     - (x.0 & b.0).count_ones() as i32
             })
-            .zip(MaterialValuesMg.iter())
+            .zip(MATERIAL_VALUES_MG.iter())
             .map(|(x, y)| x * y)
             .sum()
     }
 
     fn evaluate_center(&self, game_phase: u8) -> i32 {
-        let w = self.get_bb_white();
-        let b = self.get_bb_black();
-
         // From stockfish/psqt.cpp
         #[rustfmt::skip]
-        const PawnValuesMg: [i32; 64] = [
+        const PAWN_VALUES_MG: [i32; 64] = [
               0,   0,   0,   0,   0,   0,   0,   0,
               0,   0,   0,   0,   0,   0,   0,   0,
             -11,   6,   7,   3,   3,   7,   6, -11,
@@ -81,7 +78,7 @@ impl Position {
         ];
 
         #[rustfmt::skip]
-        const PawnValuesEg: [i32; 64] = [
+        const PAWN_VALUES_EG: [i32; 64] = [
              0,  0,  0,  0,  0,  0,  0,  0,
              0,  0,  0,  0,  0,  0,  0,  0,
              7, -4,  8, -2, -2,  8, -4,  7,
@@ -97,8 +94,8 @@ impl Position {
             .iter()
             .map(
                 |sq| match self.piece_board.0[sq.0 as usize].unwrap().color {
-                    Color::White => 1 * PawnValuesMg[sq.0 as usize],
-                    Color::Black => -1 * PawnValuesMg[63 - sq.0 as usize],
+                    Color::White => 1 * PAWN_VALUES_MG[sq.0 as usize],
+                    Color::Black => -1 * PAWN_VALUES_MG[63 - sq.0 as usize],
                     // NOTE no need to rank/file index since matrix is symmetric
                 },
             )
