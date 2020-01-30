@@ -1,6 +1,6 @@
-use movegen::MoveGenerator;
-use moves::Move;
-use position::Position;
+use crate::movegen::MoveGenerator;
+use crate::moves::Move;
+use crate::position::Position;
 
 pub struct Game {
     // TODO why are these public?

@@ -1,11 +1,11 @@
 use arrayvec::ArrayVec;
 
-use bitboard;
-use bitboard::{Bitboard, BitboardIterator};
-use moves::Move;
-use pieces::{Color, PieceName};
-use position::Position;
-use square::Square;
+use crate::bitboard;
+use crate::bitboard::{Bitboard, BitboardIterator};
+use crate::moves::Move;
+use crate::pieces::{Color, PieceName};
+use crate::position::Position;
+use crate::square::Square;
 
 type AttackMap = ArrayVec<[Bitboard; 64]>;
 

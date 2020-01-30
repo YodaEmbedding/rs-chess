@@ -1,6 +1,6 @@
 use std::fmt;
 
-use square::Square;
+use crate::square::Square;
 
 // Consider implementing relevant std::ops
 // Consider using pleco library?

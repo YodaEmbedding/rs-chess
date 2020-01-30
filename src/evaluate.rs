@@ -1,5 +1,5 @@
-use pieces::{Color, PieceName};
-use position::Position;
+use crate::pieces::{Color, PieceName};
+use crate::position::Position;
 
 /// Standardized measurements in pawn units
 pub fn normalize_evaluation(val: i32) -> f64 {

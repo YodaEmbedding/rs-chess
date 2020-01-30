@@ -1,6 +1,6 @@
 use std::fmt;
 
-use square::Square;
+use crate::square::Square;
 
 // TODO why are some of these needed?
 enum MoveFlags {

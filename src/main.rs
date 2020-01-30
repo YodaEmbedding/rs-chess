@@ -1,5 +1,4 @@
 #![feature(plugin, custom_attribute)]
-#![plugin(flamer)]
 
 extern crate arrayvec;
 extern crate flame;
@@ -17,12 +16,12 @@ mod square;
 use std::fmt;
 use std::fs::File;
 
-use evaluate::normalize_evaluation;
-use game::Game;
-use moves::Move;
-use pieces::PieceName;
-use position::Position;
-use square::Square;
+use crate::evaluate::normalize_evaluation;
+use crate::game::Game;
+use crate::moves::Move;
+use crate::pieces::PieceName;
+use crate::position::Position;
+use crate::square::Square;
 
 fn iterable_join<I, T>(v: I, sep: &str) -> String
     where I: Iterator<Item=T>,

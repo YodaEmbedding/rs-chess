@@ -1,9 +1,9 @@
 use std;
 use std::cmp;
 
-use game::Game;
-use moves::Move;
-use position::Position;
+use crate::game::Game;
+use crate::moves::Move;
+use crate::position::Position;
 
 #[derive(Debug, Clone, Copy)]
 pub enum GameError {

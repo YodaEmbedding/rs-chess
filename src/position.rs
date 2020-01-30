@@ -2,11 +2,11 @@ use std::fmt;
 
 use arrayvec::ArrayVec;
 
-use bitboard;
-use bitboard::Bitboard;
-use movegen::MoveGenerator;
-use moves::Move;
-use pieces::*;
+use crate::bitboard;
+use crate::bitboard::Bitboard;
+use crate::movegen::MoveGenerator;
+use crate::moves::Move;
+use crate::pieces::*;
 
 #[derive(Debug)]
 pub struct Position {

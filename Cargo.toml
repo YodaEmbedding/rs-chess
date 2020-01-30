@@ -4,9 +4,10 @@ version = "0.1.0"
 authors = ["Mateen Ulhaq <mulhaq2005@gmail.com>"]
 description = "A simple chess engine."
 license = "MIT"
+edition = "2018"
 
 [dependencies]
 arrayvec = "0.4.7"
 flame = "0.2.2"
-flamer = "^0.2.3"
+flamer = "0.3"
 

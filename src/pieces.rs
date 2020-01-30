@@ -4,7 +4,7 @@ use std::string::String;
 
 use arrayvec::ArrayVec;
 
-use moves::Move;
+use crate::moves::Move;
 
 // enum Direction {
 //   North =  8,
