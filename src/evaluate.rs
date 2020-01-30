@@ -32,22 +32,22 @@ impl Position {
         let w = self.get_bb_white();
         let b = self.get_bb_black();
 
-        const MaterialValuesMg: [i32; 5] = [
+        const MaterialValuesMg: [i32; 6] = [
             171,   // Pawn
             764,   // Knight
             826,   // Bishop
             1282,  // Rook
             2526,  // Queen
-            // 10000, // King
+            65536, // King
         ];
 
-        const MaterialValuesEg: [i32; 5] = [
+        const MaterialValuesEg: [i32; 6] = [
             240,   // Pawn
             848,   // Knight
             891,   // Bishop
             1373,  // Rook
             2646,  // Queen
-            // 10000, // King
+            65536, // King
         ];
 
         self.bitboard_piece.iter()
