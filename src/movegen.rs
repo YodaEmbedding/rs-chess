@@ -14,21 +14,21 @@ pub struct MoveGenerator {
     pub pawn_attack_map_b: AttackMap,
     pub knight_attack_map: AttackMap,
     pub bishop_attack_map: AttackMap,
-    pub rook_attack_map:   AttackMap,
-    pub queen_attack_map:  AttackMap,
-    pub king_attack_map:   AttackMap,
+    pub rook_attack_map: AttackMap,
+    pub queen_attack_map: AttackMap,
+    pub king_attack_map: AttackMap,
 }
 
 impl MoveGenerator {
     pub fn new() -> Self {
         Self {
-            pawn_attack_map_w:  Self::make_pawn_attack_map(false),
-            pawn_attack_map_b:  Self::make_pawn_attack_map(true),
-            knight_attack_map:  Self::make_knight_attack_map(),
-            bishop_attack_map:  Self::make_bishop_attack_map(),
-            rook_attack_map:    Self::make_rook_attack_map(),
-            queen_attack_map:   Self::make_queen_attack_map(),
-            king_attack_map:    Self::make_king_attack_map(),
+            pawn_attack_map_w: Self::make_pawn_attack_map(false),
+            pawn_attack_map_b: Self::make_pawn_attack_map(true),
+            knight_attack_map: Self::make_knight_attack_map(),
+            bishop_attack_map: Self::make_bishop_attack_map(),
+            rook_attack_map: Self::make_rook_attack_map(),
+            queen_attack_map: Self::make_queen_attack_map(),
+            king_attack_map: Self::make_king_attack_map(),
         }
     }
 
@@ -43,8 +43,9 @@ impl MoveGenerator {
             for i in 0..64 {
                 let sq = Bitboard(1 << i);
                 let bb = Bitboard(
-                    sq.shift_down().shift_left().0 |
-                    sq.shift_down().shift_right().0);
+                    sq.shift_down().shift_left().0
+                        | sq.shift_down().shift_right().0,
+                );
                 attack_map.push(bb);
             }
 
@@ -54,8 +55,8 @@ impl MoveGenerator {
         for i in 0..64 {
             let sq = Bitboard(1 << i);
             let bb = Bitboard(
-                sq.shift_up().shift_left().0 |
-                sq.shift_up().shift_right().0);
+                sq.shift_up().shift_left().0 | sq.shift_up().shift_right().0,
+            );
             attack_map.push(bb);
         }
 
@@ -68,14 +69,15 @@ impl MoveGenerator {
         for i in 0..64 {
             let sq = Bitboard(1 << i);
             let bb = Bitboard(
-                sq.shift_up()   .shift_up()   .shift_left() .0 |
-                sq.shift_up()   .shift_up()   .shift_right().0 |
-                sq.shift_down() .shift_down() .shift_left() .0 |
-                sq.shift_down() .shift_down() .shift_right().0 |
-                sq.shift_left() .shift_left() .shift_up()   .0 |
-                sq.shift_left() .shift_left() .shift_down() .0 |
-                sq.shift_right().shift_right().shift_up()   .0 |
-                sq.shift_right().shift_right().shift_down() .0);
+                sq.shift_up().shift_up().shift_left().0
+                    | sq.shift_up().shift_up().shift_right().0
+                    | sq.shift_down().shift_down().shift_left().0
+                    | sq.shift_down().shift_down().shift_right().0
+                    | sq.shift_left().shift_left().shift_up().0
+                    | sq.shift_left().shift_left().shift_down().0
+                    | sq.shift_right().shift_right().shift_up().0
+                    | sq.shift_right().shift_right().shift_down().0,
+            );
             attack_map.push(bb);
         }
 
@@ -89,11 +91,10 @@ impl MoveGenerator {
             let rank = i / 8;
             let file = i % 8;
             let sq = Bitboard(1 << i);
-            let mask = (
-                A1H8.shift_up_n  (  rank).shift_right_n(  file).0 |
-                A1H8.shift_down_n(7-rank).shift_left_n (7-file).0 |
-                A8H1.shift_up_n  (  rank).shift_left_n (7-file).0 |
-                A8H1.shift_down_n(7-rank).shift_right_n(  file).0);
+            let mask = (A1H8.shift_up_n(rank).shift_right_n(file).0
+                | A1H8.shift_down_n(7 - rank).shift_left_n(7 - file).0
+                | A8H1.shift_up_n(rank).shift_left_n(7 - file).0
+                | A8H1.shift_down_n(7 - rank).shift_right_n(file).0);
             let bb = Bitboard(!sq.0 & mask);
             attack_map.push(bb);
         }
@@ -118,7 +119,7 @@ impl MoveGenerator {
 
     fn make_queen_attack_map() -> AttackMap {
         let mut attack_map = AttackMap::new();
-        let rook_attack_map   = Self::make_rook_attack_map();
+        let rook_attack_map = Self::make_rook_attack_map();
         let bishop_attack_map = Self::make_bishop_attack_map();
 
         for i in 0..64 {
@@ -135,14 +136,15 @@ impl MoveGenerator {
         for i in 0..64 {
             let sq = Bitboard(1 << i);
             let bb = Bitboard(
-                sq.shift_up().0 |
-                sq.shift_up().shift_left().0 |
-                sq.shift_up().shift_right().0 |
-                sq.shift_down().0 |
-                sq.shift_down().shift_left().0 |
-                sq.shift_down().shift_right().0 |
-                sq.shift_left().0 |
-                sq.shift_right().0);
+                sq.shift_up().0
+                    | sq.shift_up().shift_left().0
+                    | sq.shift_up().shift_right().0
+                    | sq.shift_down().0
+                    | sq.shift_down().shift_left().0
+                    | sq.shift_down().shift_right().0
+                    | sq.shift_left().0
+                    | sq.shift_right().0,
+            );
             attack_map.push(bb);
         }
 
@@ -154,31 +156,63 @@ impl MoveGenerator {
     const INITIAL_MOVELIST_CAPACITY: usize = 64;
 
     pub fn get_moves(&self, position: &Position) -> Vec<Move> {
-        let ally_color  = position.turn;
+        let ally_color = position.turn;
         let enemy_color = position.turn.opposite();
 
-        let pieces = position.piece_board.0.iter()
+        let pieces = position
+            .piece_board
+            .0
+            .iter()
             .enumerate()
             .filter(|(i, p)| p.is_some())
-            .map(   |(i, p)| (i, p.unwrap()))
+            .map(|(i, p)| (i, p.unwrap()))
             .filter(|(i, p)| p.color == ally_color);
 
-        let mut movelist: Vec<Vec<Move>> = Vec::with_capacity(Self::INITIAL_MOVELIST_CAPACITY);
+        let mut movelist: Vec<Vec<Move>> =
+            Vec::with_capacity(Self::INITIAL_MOVELIST_CAPACITY);
 
         for (i, piece) in pieces {
             let from = Square(i as u32);
             let idx = from.0 as usize;
 
             let move_squares = match piece.piece_name {
-                PieceName::Pawn   => match position.turn {
-                    Color::White  => Self::get_pawn_attacks(   position, from, self.pawn_attack_map_w[idx]),
-                    Color::Black  => Self::get_pawn_attacks(   position, from, self.pawn_attack_map_b[idx]),
+                PieceName::Pawn => match position.turn {
+                    Color::White => Self::get_pawn_attacks(
+                        position,
+                        from,
+                        self.pawn_attack_map_w[idx],
+                    ),
+                    Color::Black => Self::get_pawn_attacks(
+                        position,
+                        from,
+                        self.pawn_attack_map_b[idx],
+                    ),
                 },
-                PieceName::Knight => Self::get_knight_attacks( position, from, self.knight_attack_map[idx]),
-                PieceName::Bishop => Self::get_sliding_attacks(position, from, self.bishop_attack_map[idx]),
-                PieceName::Rook   => Self::get_sliding_attacks(position, from, self.rook_attack_map[idx]),
-                PieceName::Queen  => Self::get_sliding_attacks(position, from, self.queen_attack_map[idx]),
-                PieceName::King   => Self::get_king_attacks(   position, from, self.king_attack_map[idx]),
+                PieceName::Knight => Self::get_knight_attacks(
+                    position,
+                    from,
+                    self.knight_attack_map[idx],
+                ),
+                PieceName::Bishop => Self::get_sliding_attacks(
+                    position,
+                    from,
+                    self.bishop_attack_map[idx],
+                ),
+                PieceName::Rook => Self::get_sliding_attacks(
+                    position,
+                    from,
+                    self.rook_attack_map[idx],
+                ),
+                PieceName::Queen => Self::get_sliding_attacks(
+                    position,
+                    from,
+                    self.queen_attack_map[idx],
+                ),
+                PieceName::King => Self::get_king_attacks(
+                    position,
+                    from,
+                    self.king_attack_map[idx],
+                ),
             };
 
             // TODO flags...?
@@ -197,13 +231,15 @@ impl MoveGenerator {
 
     // TODO fix: double pawn move AFTER pawn has moved
     // TODO fix: pawn capturing backwards (wat)
-    fn get_pawn_attacks(position: &Position, square: Square,
-        attacks: Bitboard) -> BitboardIterator {
-
+    fn get_pawn_attacks(
+        position: &Position,
+        square: Square,
+        attacks: Bitboard,
+    ) -> BitboardIterator {
         fn forward(turn: Color, bitboard: Bitboard, n: u64) -> Bitboard {
             match turn {
                 Color::White => Bitboard(bitboard.0 << n),
-                Color::Black => Bitboard(bitboard.0 >> n)
+                Color::Black => Bitboard(bitboard.0 >> n),
             }
         }
 
@@ -222,20 +258,27 @@ impl MoveGenerator {
         Bitboard(captures.0 | single_move.0 | double_move.0).iter()
     }
 
-    fn get_knight_attacks(position: &Position, square: Square,
-        attacks: Bitboard) -> BitboardIterator {
-
+    fn get_knight_attacks(
+        position: &Position,
+        square: Square,
+        attacks: Bitboard,
+    ) -> BitboardIterator {
         Bitboard(attacks.0 & !position.get_bb_ally().0).iter()
     }
 
-    fn get_king_attacks(position: &Position, square: Square,
-        attacks: Bitboard) -> BitboardIterator {
-
+    fn get_king_attacks(
+        position: &Position,
+        square: Square,
+        attacks: Bitboard,
+    ) -> BitboardIterator {
         Bitboard(attacks.0 & !position.get_bb_ally().0).iter()
     }
 
-    fn get_sliding_attacks(position: &Position, square: Square,
-        attacks: Bitboard) -> BitboardIterator {
+    fn get_sliding_attacks(
+        position: &Position,
+        square: Square,
+        attacks: Bitboard,
+    ) -> BitboardIterator {
         // How can this actually work...? Different depending on piece type, no?
 
         let turn = position.turn;
@@ -254,4 +297,3 @@ impl MoveGenerator {
 }
 
 // Magics?
-

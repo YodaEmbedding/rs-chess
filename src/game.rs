@@ -5,14 +5,14 @@ use crate::position::Position;
 pub struct Game {
     // TODO why are these public?
     pub move_generator: MoveGenerator,
-    pub position: Position
+    pub position: Position,
 }
 
 impl Game {
     pub fn new() -> Self {
         Self {
             move_generator: MoveGenerator::new(),
-            position: Position::new_default()
+            position: Position::new_default(),
         }
     }
 
@@ -24,4 +24,3 @@ impl Game {
         self.position = self.position.make_move(move_);
     }
 }
-

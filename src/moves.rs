@@ -19,8 +19,15 @@ impl Move {
         Move(from.0 | to.0 << 6 | flags << 12)
     }
 
-    #[inline] pub fn get_from(&self) -> Square { Square(self.0      & 0x3F) }
-    #[inline] pub fn get_to  (&self) -> Square { Square(self.0 >> 6 & 0x3F) }
+    #[inline]
+    pub fn get_from(&self) -> Square {
+        Square(self.0 & 0x3F)
+    }
+
+    #[inline]
+    pub fn get_to(&self) -> Square {
+        Square(self.0 >> 6 & 0x3F)
+    }
 }
 
 impl fmt::Display for Move {
@@ -28,4 +35,3 @@ impl fmt::Display for Move {
         write!(f, "{}-{}", self.get_from(), self.get_to())
     }
 }
-

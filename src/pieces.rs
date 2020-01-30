@@ -59,7 +59,7 @@ impl Color {
 
     pub fn to_int(&self) -> i32 {
         match *self {
-            Color::White =>  1,
+            Color::White => 1,
             Color::Black => -1,
         }
     }
@@ -67,28 +67,31 @@ impl Color {
 
 impl Piece {
     pub fn new(piece_name: PieceName, color: Color) -> Self {
-        Self { piece_name: piece_name, color: color }
+        Self {
+            piece_name: piece_name,
+            color: color,
+        }
     }
 }
 
 impl PieceBoard {
     pub fn new_default() -> Self {
-        use PieceName::*;
         use Color::*;
+        use PieceName::*;
 
         let xx = None::<Piece>;
-        let wp = Some(Piece::new(Pawn,   White));
+        let wp = Some(Piece::new(Pawn, White));
         let wn = Some(Piece::new(Knight, White));
         let wb = Some(Piece::new(Bishop, White));
-        let wr = Some(Piece::new(Rook,   White));
-        let wq = Some(Piece::new(Queen,  White));
-        let wk = Some(Piece::new(King,   White));
-        let bp = Some(Piece::new(Pawn,   Black));
+        let wr = Some(Piece::new(Rook, White));
+        let wq = Some(Piece::new(Queen, White));
+        let wk = Some(Piece::new(King, White));
+        let bp = Some(Piece::new(Pawn, Black));
         let bn = Some(Piece::new(Knight, Black));
         let bb = Some(Piece::new(Bishop, Black));
-        let br = Some(Piece::new(Rook,   Black));
-        let bq = Some(Piece::new(Queen,  Black));
-        let bk = Some(Piece::new(King,   Black));
+        let br = Some(Piece::new(Rook, Black));
+        let bq = Some(Piece::new(Queen, Black));
+        let bk = Some(Piece::new(King, Black));
 
         // TODO incomplete table
         #[rustfmt::skip]
@@ -108,10 +111,10 @@ impl PieceBoard {
 
     pub fn make_move(&self, move_: Move) -> Self {
         let from = move_.get_from();
-        let to   = move_.get_to();
+        let to = move_.get_to();
 
         let mut pb = self.clone();
-        pb.0[to.0   as usize] = pb.0[from.0 as usize];
+        pb.0[to.0 as usize] = pb.0[from.0 as usize];
         pb.0[from.0 as usize] = None;
         pb
     }
@@ -120,12 +123,12 @@ impl PieceBoard {
 impl PieceName {
     fn to_char(&self) -> char {
         match *self {
-            PieceName::Pawn   => 'p',
+            PieceName::Pawn => 'p',
             PieceName::Knight => 'n',
             PieceName::Bishop => 'b',
-            PieceName::Rook   => 'r',
-            PieceName::Queen  => 'q',
-            PieceName::King   => 'k'
+            PieceName::Rook => 'r',
+            PieceName::Queen => 'q',
+            PieceName::King => 'k',
         }
     }
 }
@@ -149,10 +152,14 @@ impl fmt::Display for Piece {
         let white = ["♟", "♞", "♝", "♜", "♛", "♚"];
         let black = ["♙", "♘", "♗", "♖", "♕", "♔"];
 
-        write!(f, "{}", match self.color {
-            Color::White => white[self.piece_name as usize],
-            Color::Black => black[self.piece_name as usize]
-        })
+        write!(
+            f,
+            "{}",
+            match self.color {
+                Color::White => white[self.piece_name as usize],
+                Color::Black => black[self.piece_name as usize],
+            }
+        )
     }
 }
 
@@ -161,7 +168,7 @@ impl fmt::Display for PieceBoard {
         fn opt_piece_to_str(piece: &Option<Piece>) -> String {
             match *piece {
                 Some(ref p) => format!("{}", p),
-                None        => String::from(".")
+                None => String::from("."),
             }
         }
 
@@ -172,4 +179,3 @@ impl fmt::Display for PieceBoard {
         write!(f, "{}", grid)
     }
 }
-

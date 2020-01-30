@@ -24,20 +24,19 @@ use crate::position::Position;
 use crate::square::Square;
 
 fn iterable_join<I, T>(v: I, sep: &str) -> String
-    where I: Iterator<Item=T>,
-          T: fmt::Display {
-    v
-        .map(|x| x.to_string())
-        .collect::<Vec<_>>()
-        .join(sep)
+where
+    I: Iterator<Item = T>,
+    T: fmt::Display,
+{
+    v.map(|x| x.to_string()).collect::<Vec<_>>().join(sep)
 }
 
 fn iterator_join_sorted<I, T>(v: I, sep: &str) -> String
-    where I: Iterator<Item=T>,
-          T: fmt::Display {
-    let mut v_ = v
-        .map(|x| x.to_string())
-        .collect::<Vec<_>>();
+where
+    I: Iterator<Item = T>,
+    T: fmt::Display,
+{
+    let mut v_ = v.map(|x| x.to_string()).collect::<Vec<_>>();
     v_.sort();
     v_.join(sep)
 }
@@ -52,13 +51,16 @@ fn main() {
 
         let (best_move, score) = match res {
             Ok(t) => t,
-            Err(e) => break
+            Err(e) => break,
         };
 
         println!("[{}]", iterator_join_sorted(game.get_moves().iter(), " "));
         println!("\n{}", game.position);
-        println!("\nStatic evaluation: {:.2}", normalize_evaluation(game.position.evaluate()));
-        println!(  "Depth evaluation:  {:.2}", normalize_evaluation(score));
+        println!(
+            "\nStatic evaluation: {:.2}",
+            normalize_evaluation(game.position.evaluate())
+        );
+        println!("Depth evaluation:  {:.2}", normalize_evaluation(score));
         println!("Best move: {}", best_move);
         println!("\nStatic breakdown:");
         println!("{}", game.position.evaluate_breakdown());
@@ -74,4 +76,3 @@ fn main() {
 // Magics
 
 // Experiment: Delta static evaluation (positional evaluation remains largely same between most positions)
-
